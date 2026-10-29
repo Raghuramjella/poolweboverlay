@@ -1,0 +1,2 @@
+com.example.poolweboverlay:mipmap/ic_launcher_round = 0x7f010001
+com.example.poolweboverlay:mipmap/ic_launcher = 0x7f010000

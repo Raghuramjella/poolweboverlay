@@ -19,48 +19,52 @@
 13-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:6:22-86
 14
 15    <application
-15-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:8:5-32:19
+15-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:8:5-34:19
 16        android:allowBackup="false"
 16-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:9:9-36
 17        android:debuggable="true"
 18        android:extractNativeLibs="false"
-19        android:label="Pool Web Overlay"
-19-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:10:9-41
-20        android:theme="@android:style/Theme.Material.Light.NoActionBar" >
-20-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:11:9-72
-21        <activity
-21-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:13:9-20:20
-22            android:name="com.example.poolweboverlay.MainActivity"
-22-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:14:13-41
-23            android:exported="true" >
-23-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:15:13-36
-24            <intent-filter>
-24-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:16:13-19:29
-25                <action android:name="android.intent.action.MAIN" />
-25-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:17:17-69
-25-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:17:25-66
-26
-27                <category android:name="android.intent.category.LAUNCHER" />
-27-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:18:17-77
-27-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:18:27-74
-28            </intent-filter>
-29        </activity>
-30
-31        <service
-31-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:22:9-30:19
-32            android:name="com.example.poolweboverlay.OverlayService"
-32-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:23:13-43
-33            android:exported="false"
-33-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:24:13-37
-34            android:foregroundServiceType="specialUse" >
-34-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:25:13-55
-35            <property
-35-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:27:13-29:75
-36                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-36-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:28:17-76
-37                android:value="User-enabled floating alignment overlay" />
-37-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:29:17-72
-38        </service>
-39    </application>
-40
-41</manifest>
+19        android:icon="@mipmap/ic_launcher"
+19-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:11:9-43
+20        android:label="CueAim Pro"
+20-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:10:9-35
+21        android:roundIcon="@mipmap/ic_launcher_round"
+21-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:12:9-54
+22        android:theme="@android:style/Theme.Material.Light.NoActionBar" >
+22-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:13:9-72
+23        <activity
+23-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:15:9-22:20
+24            android:name="com.example.poolweboverlay.MainActivity"
+24-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:16:13-41
+25            android:exported="true" >
+25-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:17:13-36
+26            <intent-filter>
+26-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:18:13-21:29
+27                <action android:name="android.intent.action.MAIN" />
+27-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:19:17-69
+27-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:19:25-66
+28
+29                <category android:name="android.intent.category.LAUNCHER" />
+29-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:20:17-77
+29-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:20:27-74
+30            </intent-filter>
+31        </activity>
+32
+33        <service
+33-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:24:9-32:19
+34            android:name="com.example.poolweboverlay.OverlayService"
+34-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:25:13-43
+35            android:exported="false"
+35-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:26:13-37
+36            android:foregroundServiceType="specialUse" >
+36-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:27:13-55
+37            <property
+37-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:29:13-31:75
+38                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+38-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:30:17-76
+39                android:value="User-enabled floating alignment overlay" />
+39-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:31:17-72
+40        </service>
+41    </application>
+42
+43</manifest>

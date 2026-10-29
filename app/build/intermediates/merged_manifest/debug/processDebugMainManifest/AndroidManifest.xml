@@ -16,7 +16,9 @@
         android:allowBackup="false"
         android:debuggable="true"
         android:extractNativeLibs="false"
-        android:label="Pool Web Overlay"
+        android:icon="@mipmap/ic_launcher"
+        android:label="CueAim Pro"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@android:style/Theme.Material.Light.NoActionBar" >
         <activity
             android:name="com.example.poolweboverlay.MainActivity"
