@@ -1152,72 +1152,13 @@ class OverlayService : Service() {
             prefs.getInt(key, defaultValue)
                 .coerceIn(0, 1000) / 1000f
 
+        /*
+         * Classic Grid:
+         * Preserves the previous anchor-to-anchor grid pattern. Diamond and
+         * side anchors connect across different table edges; this is the
+         * former Trickshot Grid behavior, now assigned to Classic Grid.
+         */
         private fun drawClassicGrid(
-            canvas: Canvas,
-            left: Float,
-            top: Float,
-            right: Float,
-            bottom: Float,
-            midX: Float,
-            midY: Float
-        ) {
-            val origins = arrayOf(
-                left to top,
-                midX to top,
-                right to top,
-                right to midY,
-                right to bottom,
-                midX to bottom,
-                left to bottom,
-                left to midY
-            )
-
-            val targetEdges = intArrayOf(0, 0, 0, 2, 1, 1, 1, 3)
-
-            for (index in origins.indices) {
-                val (ox, oy) = origins[index]
-                for (i in 0..divisions) {
-                    val f = i.toFloat() / divisions
-                    val (tx, ty) = when (targetEdges[index]) {
-                        0 -> (left + (right - left) * f) to bottom
-                        1 -> (left + (right - left) * f) to top
-                        2 -> left to (top + (bottom - top) * f)
-                        else -> right to (top + (bottom - top) * f)
-                    }
-                    canvas.drawLine(ox, oy, tx, ty, linePaint)
-                }
-            }
-        }
-
-        /*
-         * Trickshot layout based on the reference image:
-         * - six internal points along the top and bottom edges
-         * - three internal points along each side edge
-         * - all six pockets are also origins
-         * Every origin fans toward the other table edges to create the dense
-         * crossing pattern. All coordinates follow the saved table bounds.
-         */
-        /*
-         * Reference-style trickshot grid.
-         *
-         * Use actual edge anchor points rather than drawing 12 arbitrary
-         * subdivisions from every origin. This keeps the pattern structured:
-         *  - 6 internal anchors on top and bottom (plus the corner pockets)
-         *  - 3 internal anchors on left and right (plus corner and side pockets)
-         *  - connect anchors that belong to different edges only
-         *
-         * Shared corner anchors belong to two edges, so lines are not drawn
-         * between points on the same rail. Each pair is drawn only once.
-         */
-        /*
-         * Reference-style trickshot grid.
-         * - Six diamond anchors along the top and bottom rails.
-         * - One additional pocket origin at the midpoint of the top and bottom.
-         * - Three additional anchors on each left/right edge.
-         * - Four corner pockets.
-         * Points on the same rail are not connected to each other.
-         */
-        private fun drawTrickshotGrid(
             canvas: Canvas,
             left: Float,
             top: Float,
@@ -1241,8 +1182,7 @@ class OverlayService : Service() {
             anchors += Anchor(left, bottom, setOf(1, 2))
             anchors += Anchor(right, bottom, setOf(1, 3))
 
-            // Six diamond points on top and bottom, excluding the midpoint.
-            // The midpoint is added separately as the pocket origin.
+            // Six diamond reference points along each long rail.
             val diamondFractions = floatArrayOf(
                 1f / 8f, 2f / 8f, 3f / 8f,
                 5f / 8f, 6f / 8f, 7f / 8f
@@ -1253,18 +1193,18 @@ class OverlayService : Service() {
                 anchors += Anchor(x, bottom, setOf(1))
             }
 
-            // The two middle pockets are on the top and bottom rails.
+            // The middle pockets on the top and bottom rails.
             anchors += Anchor(midX, top, setOf(0))
             anchors += Anchor(midX, bottom, setOf(1))
 
-            // Three additional points on each side edge. These are not pockets.
+            // Three reference anchors on each short rail.
             for (fraction in floatArrayOf(0.25f, 0.5f, 0.75f)) {
                 val y = top + (bottom - top) * fraction
                 anchors += Anchor(left, y, setOf(2))
                 anchors += Anchor(right, y, setOf(3))
             }
 
-            // Draw each connection once, only between different edges.
+            // Keep the existing Classic appearance and connection pattern.
             for (i in anchors.indices) {
                 val a = anchors[i]
                 for (j in i + 1 until anchors.size) {
@@ -1272,6 +1212,71 @@ class OverlayService : Service() {
                     if (a.edges.intersect(b.edges).isEmpty()) {
                         canvas.drawLine(a.x, a.y, b.x, b.y, linePaint)
                     }
+                }
+            }
+        }
+
+        /*
+         * Trickshot Grid:
+         * Lines originate only from the six pockets (four corners and the
+         * two middle pockets). The 18 diamond/side anchors are destinations
+         * only; they never originate their own lines.
+         *
+         * Uses the existing linePaint so color, alpha, and thickness settings
+         * are unchanged.
+         */
+        private fun drawTrickshotGrid(
+            canvas: Canvas,
+            left: Float,
+            top: Float,
+            right: Float,
+            bottom: Float,
+            midX: Float,
+            midY: Float
+        ) {
+            data class Point(val x: Float, val y: Float)
+
+            // Six pocket origins: four corners and two middle pockets.
+            val pockets = listOf(
+                Point(left, top),
+                Point(midX, top),
+                Point(right, top),
+                Point(left, bottom),
+                Point(midX, bottom),
+                Point(right, bottom)
+            )
+
+            // Eighteen destination anchors only: 12 long-rail diamonds and
+            // 6 short-rail anchors. Pocket positions are not duplicated here.
+            val anchors = mutableListOf<Point>()
+            val diamondFractions = floatArrayOf(
+                1f / 8f, 2f / 8f, 3f / 8f,
+                5f / 8f, 6f / 8f, 7f / 8f
+            )
+
+            for (fraction in diamondFractions) {
+                val x = left + (right - left) * fraction
+                anchors += Point(x, top)
+                anchors += Point(x, bottom)
+            }
+
+            for (fraction in floatArrayOf(0.25f, 0.5f, 0.75f)) {
+                val y = top + (bottom - top) * fraction
+                anchors += Point(left, y)
+                anchors += Point(right, y)
+            }
+
+            // Every pocket sends lines to all reference anchors.
+            // No lines are generated from one anchor to another.
+            for (pocket in pockets) {
+                for (anchor in anchors) {
+                    canvas.drawLine(
+                        pocket.x,
+                        pocket.y,
+                        anchor.x,
+                        anchor.y,
+                        linePaint
+                    )
                 }
             }
         }
