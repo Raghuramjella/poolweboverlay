@@ -460,11 +460,15 @@ class OverlayService : Service() {
 
         scroll.addView(content)
 
+        val viewportHeight = (resources.displayMetrics.heightPixels * 0.62f)
+            .toInt()
+            .coerceAtLeast(dp(300))
+
         panel.addView(
             scroll,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(440)
+                viewportHeight
             )
         )
 
@@ -508,7 +512,7 @@ class OverlayService : Service() {
 
     private fun buildQuickControls(content: LinearLayout) {
         val status = makeText(
-            "",
+            if (guidelinesVisible) "●  GRIDLINES ACTIVE" else "○  GRIDLINES HIDDEN",
             11f,
             CYAN,
             true
@@ -516,158 +520,120 @@ class OverlayService : Service() {
             setPadding(dp(10), dp(9), dp(10), dp(9))
             background = roundedBackground(CARD, 9)
         }
-
-        status.text = if (guidelinesVisible) {
-            "●  GRIDLINES ACTIVE"
-        } else {
-            "○  GRIDLINES HIDDEN"
-        }
-
         addSection(content, status, 10)
 
-        // Alignment is separated because it is usually a one-time setup.
-        val alignmentSection = makeSection()
-
-        alignmentSection.addView(
-            makeText(
-                "SCREEN ALIGNMENT",
-                11f,
-                MUTED,
-                true
-            )
-        )
-
-        alignmentSection.addView(
-            makeText(
-                "Set the playing-area boundaries when needed.",
-                11f,
-                WHITE
-            ).apply {
-                setPadding(0, dp(5), 0, dp(9))
-            }
-        )
-
-        alignmentSection.addView(
-            makeAction(
-                "⚙  ALIGNMENT SETUP",
-                BLUE
-            ) {
-                showAlignmentSetup()
-            }
-        )
-
-        addSection(content, alignmentSection, 10)
-
-        // Gridlines visibility: a single tap.
+        // Gridline visibility toggle.
         val gridSection = makeSection()
-
-        gridSection.addView(
-            makeText(
-                "GRIDLINES",
-                11f,
-                MUTED,
-                true
-            )
-        )
-
+        gridSection.addView(makeText("GRIDLINES", 11f, MUTED, true))
         val gridButton = makeAction(
-            "",
+            if (guidelinesVisible) "✓  GRIDLINES ON  •  TAP TO HIDE" else "GRIDLINES OFF  •  TAP TO SHOW",
             if (guidelinesVisible) CARD else BLUE,
             if (guidelinesVisible) CYAN else WHITE
         ) {
             setGuidelinesVisible(!guidelinesVisible)
         }
-
         gridButton.tag = "grid_toggle"
-
-        gridButton.text = if (guidelinesVisible) {
-            "✓  GRIDLINES ON  •  TAP TO HIDE"
-        } else {
-            "GRIDLINES OFF  •  TAP TO SHOW"
-        }
-
         gridSection.addView(
             gridButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                topMargin = dp(8)
-            }
+            ).apply { topMargin = dp(8) }
         )
-
         addSection(content, gridSection, 10)
 
-        // Thickness remains directly accessible in the compact panel.
+        // Put thickness near the top so it is visible without scrolling far.
         val thicknessSection = makeSection()
-
+        thicknessSection.addView(makeText("LINE THICKNESS", 11f, MUTED, true))
         val thicknessLabel = makeText(
-            "",
+            thicknessText(prefs.getInt("line_thickness", DEFAULT_THICKNESS)
+                .coerceIn(MIN_THICKNESS, MAX_THICKNESS)),
             12f,
             WHITE,
             true
         )
-
-        val currentThickness = prefs.getInt(
-            "line_thickness",
-            DEFAULT_THICKNESS
-        ).coerceIn(MIN_THICKNESS, MAX_THICKNESS)
-
-        thicknessLabel.text = thicknessText(currentThickness)
-
         thicknessSection.addView(thicknessLabel)
 
+        val currentThickness = prefs.getInt("line_thickness", DEFAULT_THICKNESS)
+            .coerceIn(MIN_THICKNESS, MAX_THICKNESS)
         val thicknessSlider = SeekBar(this).apply {
             max = MAX_THICKNESS - MIN_THICKNESS
             progress = currentThickness - MIN_THICKNESS
+            minimumHeight = dp(48)
+            setPadding(dp(2), dp(6), dp(2), dp(6))
+            isEnabled = true
             styleSeekBar(this)
         }
-
         thicknessSlider.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     val value = progress + MIN_THICKNESS
-
-                    prefs.edit()
-                        .putInt("line_thickness", value)
-                        .apply()
-
+                    prefs.edit().putInt("line_thickness", value).apply()
                     thicknessLabel.text = thicknessText(value)
                     webView?.invalidate()
                 }
-
-                override fun onStartTrackingTouch(
-                    seekBar: SeekBar?
-                ) {}
-
-                override fun onStopTrackingTouch(
-                    seekBar: SeekBar?
-                ) {}
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             }
         )
-
         thicknessSection.addView(thicknessSlider)
-
         thicknessSection.addView(
-            makeText(
-                "0.5 dp                         5.0 dp",
-                10f,
-                MUTED
-            )
+            makeText("0.5 dp                                      5.0 dp", 10f, MUTED)
         )
-
         addSection(content, thicknessSection, 10)
 
+        // Select the drawing pattern. The choice is persisted.
+        val gridStyleSection = makeSection()
+        gridStyleSection.addView(makeText("GRID STYLE", 11f, MUTED, true))
+        gridStyleSection.addView(
+            makeText("Choose the line pattern shown over the table.", 11f, WHITE).apply {
+                setPadding(0, dp(5), 0, dp(8))
+            }
+        )
+        val selectedGridStyle = prefs.getInt("grid_style", 0)
+        val classicGridButton = makeAction(
+            if (selectedGridStyle == 0) "✓  CLASSIC GRID" else "CLASSIC GRID",
+            if (selectedGridStyle == 0) BLUE else BORDER,
+            if (selectedGridStyle == 0) WHITE else MUTED
+        ) {
+            prefs.edit().putInt("grid_style", 0).apply()
+            webView?.invalidate()
+            showMainPanel()
+        }
+        val trickshotGridButton = makeAction(
+            if (selectedGridStyle == 1) "✓  TRICKSHOT GRID" else "TRICKSHOT GRID",
+            if (selectedGridStyle == 1) BLUE else BORDER,
+            if (selectedGridStyle == 1) WHITE else MUTED
+        ) {
+            prefs.edit().putInt("grid_style", 1).apply()
+            webView?.invalidate()
+            showMainPanel()
+        }
+        gridStyleSection.addView(classicGridButton)
+        gridStyleSection.addView(
+            trickshotGridButton,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(7) }
+        )
+        addSection(content, gridStyleSection, 10)
+
+        // Keep alignment controls separate from everyday toggles.
+        val alignmentSection = makeSection()
+        alignmentSection.addView(makeText("SCREEN ALIGNMENT", 11f, MUTED, true))
+        alignmentSection.addView(
+            makeText("Set the playing-area boundaries when needed.", 11f, WHITE).apply {
+                setPadding(0, dp(5), 0, dp(9))
+            }
+        )
+        alignmentSection.addView(makeAction("⚙  ALIGNMENT SETUP", BLUE) {
+            showAlignmentSetup()
+        })
+        addSection(content, alignmentSection, 10)
+
         content.addView(
-            makeText(
-                "Drag the title to move this panel.",
-                10f,
-                MUTED
-            ).apply {
+            makeText("Drag the title to move this panel.", 10f, MUTED).apply {
                 gravity = Gravity.CENTER
                 setPadding(0, dp(2), 0, dp(4))
             }
@@ -1186,6 +1152,130 @@ class OverlayService : Service() {
             prefs.getInt(key, defaultValue)
                 .coerceIn(0, 1000) / 1000f
 
+        private fun drawClassicGrid(
+            canvas: Canvas,
+            left: Float,
+            top: Float,
+            right: Float,
+            bottom: Float,
+            midX: Float,
+            midY: Float
+        ) {
+            val origins = arrayOf(
+                left to top,
+                midX to top,
+                right to top,
+                right to midY,
+                right to bottom,
+                midX to bottom,
+                left to bottom,
+                left to midY
+            )
+
+            val targetEdges = intArrayOf(0, 0, 0, 2, 1, 1, 1, 3)
+
+            for (index in origins.indices) {
+                val (ox, oy) = origins[index]
+                for (i in 0..divisions) {
+                    val f = i.toFloat() / divisions
+                    val (tx, ty) = when (targetEdges[index]) {
+                        0 -> (left + (right - left) * f) to bottom
+                        1 -> (left + (right - left) * f) to top
+                        2 -> left to (top + (bottom - top) * f)
+                        else -> right to (top + (bottom - top) * f)
+                    }
+                    canvas.drawLine(ox, oy, tx, ty, linePaint)
+                }
+            }
+        }
+
+        /*
+         * Trickshot layout based on the reference image:
+         * - six internal points along the top and bottom edges
+         * - three internal points along each side edge
+         * - all six pockets are also origins
+         * Every origin fans toward the other table edges to create the dense
+         * crossing pattern. All coordinates follow the saved table bounds.
+         */
+        /*
+         * Reference-style trickshot grid.
+         *
+         * Use actual edge anchor points rather than drawing 12 arbitrary
+         * subdivisions from every origin. This keeps the pattern structured:
+         *  - 6 internal anchors on top and bottom (plus the corner pockets)
+         *  - 3 internal anchors on left and right (plus corner and side pockets)
+         *  - connect anchors that belong to different edges only
+         *
+         * Shared corner anchors belong to two edges, so lines are not drawn
+         * between points on the same rail. Each pair is drawn only once.
+         */
+        /*
+         * Reference-style trickshot grid.
+         * - Six diamond anchors along the top and bottom rails.
+         * - One additional pocket origin at the midpoint of the top and bottom.
+         * - Three additional anchors on each left/right edge.
+         * - Four corner pockets.
+         * Points on the same rail are not connected to each other.
+         */
+        private fun drawTrickshotGrid(
+            canvas: Canvas,
+            left: Float,
+            top: Float,
+            right: Float,
+            bottom: Float,
+            midX: Float,
+            midY: Float
+        ) {
+            data class Anchor(
+                val x: Float,
+                val y: Float,
+                val edges: Set<Int>
+            )
+
+            // Edge IDs: 0 = top, 1 = bottom, 2 = left, 3 = right.
+            val anchors = mutableListOf<Anchor>()
+
+            // Four corner pockets.
+            anchors += Anchor(left, top, setOf(0, 2))
+            anchors += Anchor(right, top, setOf(0, 3))
+            anchors += Anchor(left, bottom, setOf(1, 2))
+            anchors += Anchor(right, bottom, setOf(1, 3))
+
+            // Six diamond points on top and bottom, excluding the midpoint.
+            // The midpoint is added separately as the pocket origin.
+            val diamondFractions = floatArrayOf(
+                1f / 8f, 2f / 8f, 3f / 8f,
+                5f / 8f, 6f / 8f, 7f / 8f
+            )
+            for (fraction in diamondFractions) {
+                val x = left + (right - left) * fraction
+                anchors += Anchor(x, top, setOf(0))
+                anchors += Anchor(x, bottom, setOf(1))
+            }
+
+            // The two middle pockets are on the top and bottom rails.
+            anchors += Anchor(midX, top, setOf(0))
+            anchors += Anchor(midX, bottom, setOf(1))
+
+            // Three additional points on each side edge. These are not pockets.
+            for (fraction in floatArrayOf(0.25f, 0.5f, 0.75f)) {
+                val y = top + (bottom - top) * fraction
+                anchors += Anchor(left, y, setOf(2))
+                anchors += Anchor(right, y, setOf(3))
+            }
+
+            // Draw each connection once, only between different edges.
+            for (i in anchors.indices) {
+                val a = anchors[i]
+                for (j in i + 1 until anchors.size) {
+                    val b = anchors[j]
+                    if (a.edges.intersect(b.edges).isEmpty()) {
+                        canvas.drawLine(a.x, a.y, b.x, b.y, linePaint)
+                    }
+                }
+            }
+        }
+
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
 
@@ -1220,42 +1310,14 @@ class OverlayService : Service() {
             val midX = (left + right) / 2f
             val midY = (top + bottom) / 2f
 
-            val origins = arrayOf(
-                left to top,
-                midX to top,
-                right to top,
-                right to midY,
-                right to bottom,
-                midX to bottom,
-                left to bottom,
-                left to midY
-            )
-
-            val targetEdges = intArrayOf(
-                0, 0, 0, 2, 1, 1, 1, 3
-            )
-
-            for (index in origins.indices) {
-                val (ox, oy) = origins[index]
-
-                for (i in 0..divisions) {
-                    val f = i.toFloat() / divisions
-
-                    val (tx, ty) = when (targetEdges[index]) {
-                        0 -> (left + (right - left) * f) to bottom
-                        1 -> (left + (right - left) * f) to top
-                        2 -> left to (top + (bottom - top) * f)
-                        else -> right to (top + (bottom - top) * f)
-                    }
-
-                    canvas.drawLine(
-                        ox,
-                        oy,
-                        tx,
-                        ty,
-                        linePaint
-                    )
-                }
+            if (prefs.getInt("grid_style", 0) == 1) {
+                drawTrickshotGrid(
+                    canvas, left, top, right, bottom, midX, midY
+                )
+            } else {
+                drawClassicGrid(
+                    canvas, left, top, right, bottom, midX, midY
+                )
             }
 
             canvas.restoreToCount(save)
