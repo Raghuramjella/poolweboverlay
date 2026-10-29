@@ -1,2 +1,4 @@
-int mipmap ic_launcher 0x7f010000
-int mipmap ic_launcher_round 0x7f010001
+int drawable splash_background 0x7f010000
+int mipmap ic_launcher 0x7f020000
+int mipmap ic_launcher_round 0x7f020001
+int style CueAimTheme 0x7f030000

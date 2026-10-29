@@ -1,2 +1,4 @@
-com.example.poolweboverlay:mipmap/ic_launcher_round = 0x7f010001
-com.example.poolweboverlay:mipmap/ic_launcher = 0x7f010000
+com.example.poolweboverlay:mipmap/ic_launcher_round = 0x7f020001
+com.example.poolweboverlay:mipmap/ic_launcher = 0x7f020000
+com.example.poolweboverlay:style/CueAimTheme = 0x7f030000
+com.example.poolweboverlay:drawable/splash_background = 0x7f010000

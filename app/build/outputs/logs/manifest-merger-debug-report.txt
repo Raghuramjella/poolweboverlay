@@ -38,7 +38,7 @@ INJECTED from C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\ma
 	android:allowBackup
 		ADDED from C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:9:9-36
 	android:theme
-		ADDED from C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:13:9-72
+		ADDED from C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:13:9-43
 activity#com.example.poolweboverlay.MainActivity
 ADDED from C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:15:9-22:20
 	android:exported

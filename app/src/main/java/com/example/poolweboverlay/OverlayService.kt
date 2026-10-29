@@ -21,6 +21,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.SeekBar
@@ -68,7 +69,7 @@ class OverlayService : Service() {
     private var panelParams: WindowManager.LayoutParams? = null
     private var isAlignmentScreen = false
 
-    private var bubbleView: TextView? = null
+    private var bubbleView: View? = null
     private var bubbleParams: WindowManager.LayoutParams? = null
 
     private val prefs by lazy {
@@ -966,14 +967,14 @@ class OverlayService : Service() {
     private fun showBubble(x: Int, y: Int) {
         if (bubbleView != null) return
 
-        val bubble = TextView(this).apply {
-            text = "CA"
-            textSize = 14f
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(WHITE)
-            gravity = Gravity.CENTER
+        // Use CueAim Pro's actual launcher icon inside the floating bubble.
+        val bubble = ImageView(this).apply {
+            setImageDrawable(packageManager.getApplicationIcon(packageName))
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setPadding(dp(7), dp(7), dp(7), dp(7))
             background = roundedBackground(BLUE, 50, CYAN)
             elevation = dp(10).toFloat()
+            contentDescription = "CueAim Pro controls"
             isClickable = true
         }
 

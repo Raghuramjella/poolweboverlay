@@ -24,6 +24,10 @@
         "source": "com.example.poolweboverlay.app-main-6:/mipmap-xxxhdpi/ic_launcher_round.png"
     },
     {
+        "merged": "com.example.poolweboverlay.app-debug-4:/drawable_splash_background.xml.flat",
+        "source": "com.example.poolweboverlay.app-main-6:/drawable/splash_background.xml"
+    },
+    {
         "merged": "com.example.poolweboverlay.app-debug-4:/mipmap-xxhdpi_ic_launcher.png.flat",
         "source": "com.example.poolweboverlay.app-main-6:/mipmap-xxhdpi/ic_launcher.png"
     },

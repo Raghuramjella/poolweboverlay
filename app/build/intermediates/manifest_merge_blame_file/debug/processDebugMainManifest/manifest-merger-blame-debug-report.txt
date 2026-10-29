@@ -1,8 +1,8 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.example.poolweboverlay"
-4    android:versionCode="2"
-5    android:versionName="1.1" >
+4    android:versionCode="3"
+5    android:versionName="1.2" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="26"
@@ -30,8 +30,8 @@
 20-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:10:9-35
 21        android:roundIcon="@mipmap/ic_launcher_round"
 21-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:12:9-54
-22        android:theme="@android:style/Theme.Material.Light.NoActionBar" >
-22-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:13:9-72
+22        android:theme="@style/CueAimTheme" >
+22-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:13:9-43
 23        <activity
 23-->C:\Users\raghu\OneDrive\Desktop\placepre\poolweboverlay\app\src\main\AndroidManifest.xml:15:9-22:20
 24            android:name="com.example.poolweboverlay.MainActivity"
