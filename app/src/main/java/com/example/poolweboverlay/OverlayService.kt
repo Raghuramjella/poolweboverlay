@@ -1234,16 +1234,21 @@ class OverlayService : Service() {
             midX: Float,
             midY: Float
         ) {
-            data class Point(val x: Float, val y: Float)
+            data class Point(
+                val x: Float,
+                val y: Float,
+                val edges: Set<Int>
+            )
 
+            // Edge IDs: 0 = top, 1 = bottom, 2 = left, 3 = right.
             // Six pocket origins: four corners and two middle pockets.
             val pockets = listOf(
-                Point(left, top),
-                Point(midX, top),
-                Point(right, top),
-                Point(left, bottom),
-                Point(midX, bottom),
-                Point(right, bottom)
+                Point(left, top, setOf(0, 2)),
+                Point(midX, top, setOf(0)),
+                Point(right, top, setOf(0, 3)),
+                Point(left, bottom, setOf(1, 2)),
+                Point(midX, bottom, setOf(1)),
+                Point(right, bottom, setOf(1, 3))
             )
 
             // Eighteen destination anchors only: 12 long-rail diamonds and
@@ -1256,20 +1261,23 @@ class OverlayService : Service() {
 
             for (fraction in diamondFractions) {
                 val x = left + (right - left) * fraction
-                anchors += Point(x, top)
-                anchors += Point(x, bottom)
+                anchors += Point(x, top, setOf(0))
+                anchors += Point(x, bottom, setOf(1))
             }
 
             for (fraction in floatArrayOf(0.25f, 0.5f, 0.75f)) {
                 val y = top + (bottom - top) * fraction
-                anchors += Point(left, y)
-                anchors += Point(right, y)
+                anchors += Point(left, y, setOf(2))
+                anchors += Point(right, y, setOf(3))
             }
 
-            // Every pocket sends lines to all reference anchors.
-            // No lines are generated from one anchor to another.
+            // Draw only inward/cross-table connections. Skip anchors on any
+            // rail that the pocket itself belongs to, removing border lines.
             for (pocket in pockets) {
                 for (anchor in anchors) {
+                    if (pocket.edges.intersect(anchor.edges).isNotEmpty()) {
+                        continue
+                    }
                     canvas.drawLine(
                         pocket.x,
                         pocket.y,
